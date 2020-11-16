@@ -332,6 +332,8 @@ class DiggPage(ExPage):
                             " ".join(map(str, self.main_range)),
                             " ".join(map(str, self.trailing_range))]))
 
+class QuerySetDiggPaginator(DiggPaginator):
+    pass
 
 if __name__ == "__main__":
     import doctest

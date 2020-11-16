@@ -49,3 +49,4 @@ coverage.xml
 nosetests.xml
 violations.txt
 pip-log.txt
+/.pydevproject
