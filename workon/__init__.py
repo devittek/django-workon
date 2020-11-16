@@ -3,6 +3,7 @@ default_app_config = 'workon.conf.WorkonConfig'
 
 
 from workon.templates import *
+from workon.utils import *
 from workon.views import *
 # from workon.fields import *
 
