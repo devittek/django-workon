@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import six
 import warnings
 from ws4redis import settings
 from ws4redis._compat import is_authenticated
@@ -58,32 +57,23 @@ def _wrap_sessions(sessions, request):
     return result
 
 
-class RedisMessage(six.binary_type):
+class RedisMessage(bytes):
     """
     A class wrapping messages to be send and received through RedisStore. This class behaves like
     a normal string class, but silently discards heartbeats and converts messages received from
     Redis.
     """
     def __new__(cls, value):
-        if six.PY3:
-            if isinstance(value, str):
-                if value != settings.WS4REDIS_HEARTBEAT:
-                    value = value.encode()
-                    return super(RedisMessage, cls).__new__(cls, value)
-            elif isinstance(value, (bytes, bytearray)):
-                if settings.WS4REDIS_HEARTBEAT is None or value != settings.WS4REDIS_HEARTBEAT.encode():
-                    return super(RedisMessage, cls).__new__(cls, value)
-            elif isinstance(value, list):
-                if len(value) >= 2 and value[0] == b'message':
-                    return super(RedisMessage, cls).__new__(cls, value[2])
-        else:
-            if isinstance(value, (six.string_types, bytearray)):
-                if value != settings.WS4REDIS_HEARTBEAT:
-                    return six.binary_type.__new__(cls, value)
-            elif isinstance(value, list):
-                if len(value) >= 2 and value[0] == 'message':
-                    return six.binary_type.__new__(cls, value[2])
-        return None
+        if isinstance(value, str):
+            if value != settings.WS4REDIS_HEARTBEAT:
+                value = value.encode()
+                return super(RedisMessage, cls).__new__(cls, value)
+        elif isinstance(value, (bytes, bytearray)):
+            if settings.WS4REDIS_HEARTBEAT is None or value != settings.WS4REDIS_HEARTBEAT.encode():
+                return super(RedisMessage, cls).__new__(cls, value)
+        elif isinstance(value, list):
+            if len(value) >= 2 and value[0] == b'message':
+                return super(RedisMessage, cls).__new__(cls, value[2])
 
 
 class RedisStore(object):

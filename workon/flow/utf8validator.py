@@ -27,10 +27,8 @@
 ##
 ###############################################################################
 
-import six
 
-if six.PY3:
-    xrange = range
+xrange = range
 
 ## use Cython implementation of UTF8 validator if available
 ##
@@ -119,7 +117,7 @@ except:
             total amount of consumed bytes.
             """
 
-            if not isinstance(ba, six.text_type):
+            if not isinstance(ba, str):
                 ba = ba.decode()
             l = len(ba)
 

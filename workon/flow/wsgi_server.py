@@ -2,8 +2,7 @@
 import sys
 
 import logging
-import six
-from six.moves import http_client
+import http.client
 from redis import StrictRedis
 import django
 if django.VERSION[:2] >= (1, 7):
@@ -93,7 +92,7 @@ class WebsocketWSGIServer(object):
         try:
             self.assure_protocol_requirements(environ)
             request = WSGIRequest(environ)
-            if isinstance(private_settings.WS4REDIS_PROCESS_REQUEST, six.string_types):
+            if isinstance(private_settings.WS4REDIS_PROCESS_REQUEST, str):
                 import_string(private_settings.WS4REDIS_PROCESS_REQUEST)(request)
             elif callable(private_settings.WS4REDIS_PROCESS_REQUEST):
                 private_settings.WS4REDIS_PROCESS_REQUEST(request)
@@ -169,11 +168,10 @@ class WebsocketWSGIServer(object):
                 websocket.close(code=1001, message='Websocket Closed')
             else:
                 logger.warning('Starting late response on websocket')
-                status_text = http_client.responses.get(response.status_code, 'UNKNOWN STATUS CODE')
+                status_text = http.client.responses.get(response.status_code, 'UNKNOWN STATUS CODE')
                 status = '{0} {1}'.format(response.status_code, status_text)
                 headers = response._headers.values()
-                if six.PY3:
-                    headers = list(headers)
+                headers = list(headers)
                 start_response(force_str(status), headers)
                 logger.info('Finish non-websocket response with status code: {}'.format(response.status_code))
         return response

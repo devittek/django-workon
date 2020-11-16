@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-import six
 import base64
 import select
 import logging
@@ -9,7 +8,7 @@ from django.core.wsgi import get_wsgi_application
 from django.core.servers.basehttp import WSGIServer, ServerHandler as _ServerHandler, WSGIRequestHandler as _WSGIRequestHandler
 from django.conf import settings
 from django.core.management.commands import runserver
-from django.utils.six.moves import socketserver
+import socketserver
 from django.utils.encoding import force_str
 from ws4redis.websocket import WebSocket
 from ws4redis.wsgi_server import WebsocketWSGIServer, HandshakeError, UpgradeRequiredError
@@ -78,9 +77,8 @@ class WebsocketRunServer(WebsocketWSGIServer):
             # 5.2.1 (3)
             raise HandshakeError('Invalid key: {0}'.format(key))
 
-        sec_ws_accept = base64.b64encode(sha1(six.b(key) + self.WS_GUID).digest())
-        if six.PY3:
-            sec_ws_accept = sec_ws_accept.decode('ascii')
+        sec_ws_accept = base64.b64encode(sha1(key + self.WS_GUID).digest())
+        sec_ws_accept = sec_ws_accept.decode('ascii')
         headers = [
             ('Upgrade', 'websocket'),
             ('Connection', 'Upgrade'),
@@ -92,7 +90,7 @@ class WebsocketRunServer(WebsocketWSGIServer):
 
         logger.debug('WebSocket request accepted, switching protocols')
         start_response(force_str('101 Switching Protocols'), headers)
-        six.get_method_self(start_response).finish_content()
+        self(start_response).finish_content()
         return WebSocket(environ['wsgi.input'])
 
     def select(self, rlist, wlist, xlist, timeout=None):

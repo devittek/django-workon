@@ -2,7 +2,6 @@
 # This code was generously pilfered from https://bitbucket.org/Jeffrey/gevent-websocket
 # written by Jeffrey Gelens (http://noppo.pro/) and licensed under the Apache License, Version 2.0
 import logging
-import six
 import struct
 from socket import error as socket_error
 from ws4redis.utf8validator import Utf8Validator
@@ -10,8 +9,7 @@ from ws4redis.exceptions import WebSocketError, FrameTooLargeException
 
 logger = logging.getLogger('django.request')
 
-if six.PY3:
-    xrange = range
+xrange = range
 
 
 class WebSocket(object):
@@ -54,10 +52,10 @@ class WebSocket(object):
         """
         :returns: The utf-8 byte string equivalent of `text`.
         """
-        if isinstance(text, six.binary_type):
+        if isinstance(text, bytes):
             return text
-        if not isinstance(text, six.text_type):
-            text = six.text_type(text or '')
+        if not isinstance(text, str):
+            text = str(text or '')
         return text.encode('utf-8')
 
     def _is_valid_close_code(self, code):
@@ -98,10 +96,7 @@ class WebSocket(object):
         if len(payload) < 2:
             raise WebSocketError('Invalid close frame: {0} {1}'.format(header, payload))
         rv = payload[:2]
-        if six.PY2:
-            code = struct.unpack('!H', str(rv))[0]
-        else:
-            code = struct.unpack('!H', bytes(rv))[0]
+        code = struct.unpack('!H', bytes(rv))[0]
         payload = payload[2:]
         if payload:
             validator = Utf8Validator()
@@ -137,7 +132,7 @@ class WebSocket(object):
         except socket_error:
             payload = ''
         except Exception:
-            logger.debug("{}: {}".format(type(e), six.text_type(e)))
+            logger.debug("{}: {}".format(type(e), str(e)))
             payload = ''
         if len(payload) != header.length:
             raise WebSocketError('Unexpected EOF reading frame payload')
@@ -190,18 +185,14 @@ class WebSocket(object):
                 raise WebSocketError("Unexpected opcode={0!r}".format(f_opcode))
             if opcode == self.OPCODE_TEXT:
                 self.validate_utf8(payload)
-                if six.PY3:
-                    payload = payload.decode()
+                payload = payload.decode()
             if message is None:
-                message = six.text_type() if opcode == self.OPCODE_TEXT else six.binary_type()
+                message = str() if opcode == self.OPCODE_TEXT else byte()
             message += payload
             if header.fin:
                 break
         if opcode == self.OPCODE_TEXT:
-            if six.PY2:
-                self.validate_utf8(message)
-            else:
-                self.validate_utf8(message.encode())
+            self.validate_utf8(message.encode())
             return message
         else:
             return bytearray(message)
@@ -240,7 +231,7 @@ class WebSocket(object):
         if opcode == self.OPCODE_TEXT:
             message = self._encode_bytes(message)
         elif opcode == self.OPCODE_BINARY:
-            message = six.binary_type(message)
+            message = byte(message)
         header = Header.encode_header(True, opcode, '', len(message), 0)
         try:
             self.stream.write(header + message)
@@ -252,7 +243,7 @@ class WebSocket(object):
         Send a frame over the websocket with message as its payload
         """
         if binary is None:
-            binary = not isinstance(message, six.string_types)
+            binary = not isinstance(message, str)
         opcode = self.OPCODE_BINARY if binary else self.OPCODE_TEXT
         try:
             self.send_frame(message, opcode)
@@ -289,12 +280,8 @@ class Stream(object):
     __slots__ = ('read', 'write', 'fileno')
 
     def __init__(self, wsgi_input):
-        if six.PY2:
-            self.read = wsgi_input._sock.recv
-            self.write = wsgi_input._sock.sendall
-        else:
-            self.read = wsgi_input.raw._sock.recv
-            self.write = wsgi_input.raw._sock.sendall
+        self.read = wsgi_input.raw._sock.recv
+        self.write = wsgi_input.raw._sock.sendall
         self.fileno = wsgi_input.fileno()
 
 
@@ -324,9 +311,7 @@ class Header(object):
         mask = bytearray(self.mask)
         for i in xrange(self.length):
             payload[i] ^= mask[i % 4]
-        if six.PY3:
-            return bytes(payload)
-        return str(payload)
+        return bytes(payload)
 
     # it's the same operation
     unmask_payload = mask_payload
@@ -394,10 +379,7 @@ class Header(object):
         """
         first_byte = opcode
         second_byte = 0
-        if six.PY2:
-            extra = ''
-        else:
-            extra = b''
+        extra = b''
         if fin:
             first_byte |= cls.FIN_MASK
         if flags & cls.RSV0_MASK:
@@ -420,6 +402,4 @@ class Header(object):
         if mask:
             second_byte |= cls.MASK_MASK
             extra += mask
-        if six.PY3:
-            return bytes([first_byte, second_byte]) + extra
-        return chr(first_byte) + chr(second_byte) + extra
+        return bytes([first_byte, second_byte]) + extra

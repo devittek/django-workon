@@ -14,7 +14,7 @@ from django.forms.widgets import FileInput as OriginalFileInput
 from django.template.loader import render_to_string
 from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
-from django.utils import datetime_safe, formats, six, translation
+from django.utils import datetime_safe, formats, translation
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
 

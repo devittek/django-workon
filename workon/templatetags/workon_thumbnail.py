@@ -14,7 +14,6 @@ def lazy_register(register):
         from django.templatetags.static import static
         from django.contrib.staticfiles.storage import staticfiles_storage
         from django.contrib.staticfiles import finders
-        from django.utils.six import text_type
         from sorl.thumbnail.shortcuts import get_thumbnail
         from sorl.thumbnail.images import ImageFile, DummyImageFile
 

@@ -7,7 +7,6 @@ from inspect import getargspec
 from django import forms
 from django.db.models import TextField, FileField
 from django.core.files.base import File
-from django.utils import six
 from django.db.models.fields.files import ImageFieldFile, ImageFile, FieldFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
@@ -139,7 +138,7 @@ class MediaDescriptor(object):
 
         # Si on recupere la valeur unicode c'est la valeur en DB il faut la decompiler et
         # dispatcher vers le bon attr_class
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
 
             type_value = value.split('|')
             if len(type_value) < 2:

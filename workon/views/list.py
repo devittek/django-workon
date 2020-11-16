@@ -6,7 +6,6 @@ from django.db import models
 from django.views import generic
 from django.shortcuts import render
 from django.utils.html import mark_safe
-from django.utils import six
 from django.utils.text import slugify
 from django.forms.fields import CallableChoiceIterator
 from django.core.exceptions import FieldDoesNotExist
@@ -161,7 +160,7 @@ class ListColumn():
             label = col[-1]
             col = cls.make_instance(listview, col[0], label=col[-1])
 
-        elif isinstance(col, six.string_types):
+        elif isinstance(col, str):
             col = cls(col, **kwargs)
 
         if listview.model and not col.label:
@@ -266,7 +265,7 @@ class List(generic.FormView):
         elif isinstance(fi, tuple):
             fi = self.make_filter_instance(fi[0], label=fi[-1])
 
-        elif isinstance(fi, six.string_types):
+        elif isinstance(fi, str):
             name_ftype = fi.split('::', 1)
             ftype = name_ftype[-1]
             name = name_ftype[0]
@@ -427,7 +426,7 @@ class List(generic.FormView):
             value = f'''<i class="icon {'success' if value else 'error'}">{'check' if value else 'close'}</i>'''
         elif isinstance(value, datetime.date):
             value = value.strftime("%d %b <sup>%Y</sup> <sub>à %H:%M</sub>").replace('<sub>à 00:00</sub>', '')
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             value = value
         data['value'] = value 
 

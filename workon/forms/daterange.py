@@ -1,6 +1,6 @@
 import datetime
 from django import forms
-from django.utils import formats, six
+from django.utils import formats
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_str, force_text
@@ -66,7 +66,7 @@ class DateRangeInput(forms.DateInput):
 
     def format_value(self, values):
 
-        if isinstance(values, six.text_type):
+        if isinstance(values, str):
             value = values.strip()        
             values = value.split(' - ')
             if len(values) == 2:
@@ -97,10 +97,10 @@ class DateRangeField(forms.DateField):
         super().__init__(*args, **kwargs)
 
     def to_python(self, value):
-        if not value and isinstance(self.initial, six.text_type):
+        if not value and isinstance(self.initial, str):
             value = self.initial
 
-        if isinstance(value, six.text_type):
+        if isinstance(value, str):
             values = value.strip().split(' - ')
             if len(values) == 2:
                 return [super().to_python(values[0]), super().to_python(values[1])]
@@ -112,6 +112,6 @@ class DateRangeField(forms.DateField):
 
     def prepare_value(self, value):
         if not value:
-            if isinstance(self.initial, six.text_type):
+            if isinstance(self.initial, str):
                 return self.initial
         return value

@@ -4,7 +4,6 @@ from collections import defaultdict
 
 from django.apps import apps
 from django.db import models
-from django.utils import six
 from django.utils.module_loading import import_string
 
 CACHE_NAME = '_workon_cleanup_original_cache'
@@ -19,10 +18,7 @@ def fields_dict_default():
     return {}
 FIELDS_FIELDS = defaultdict(fields_dict_default)
 FIELDS_STORAGE = defaultdict(fields_dict_default)
-if six.PY3:
-    DOTTED_PATH = '{klass.__module__}.{klass.__qualname__}'
-else:
-    DOTTED_PATH = '{klass.__module__}.{klass.__name__}'
+DOTTED_PATH = '{klass.__module__}.{klass.__qualname__}'
 
 
 # cache init ##

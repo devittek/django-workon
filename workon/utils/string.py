@@ -3,7 +3,6 @@ from django.utils.encoding import force_str, force_text
 from django.utils.text import Truncator, slugify as django_slugify
 from django.utils.html import mark_safe
 from django.utils.encoding import force_text
-from django.utils import six
 
 # space_chars = re.compile(r"[\.\'\"\_\-\,\?\(\)\[\]]")
 
@@ -44,7 +43,7 @@ def jsonify(obj):
         return json.dumps(obj, cls=Encoder)
     elif type(obj) == type({}.keys()):
         return json.dumps(list(obj), cls=Encoder)
-    elif isinstance(obj, six.string_types):
+    elif isinstance(obj, str):
         obj = re.sub(r'([\w\d_]+)\:', '"\\1":', obj)
         obj = re.sub(r'\'', '"', obj)
         obj = re.sub(r'\/\/\s*[\w\s\d]+', '', obj)
@@ -74,7 +73,7 @@ def normalize_hard(value):
 
 def prepare_for_search(string, default=""):
     if not string: return default
-    if not isinstance(string, six.string_types): string = forceunicode(string)
+    if not isinstance(string, str): string = forceunicode(string)
     string = string.replace(u'“', ' ')
     string = string.replace(u'”', ' ')
     string = string.replace(u'"', ' ')

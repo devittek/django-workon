@@ -29,7 +29,7 @@ class EmbedDescriptor(object):
         if value in [None, False, '']:
             value = None
 
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
 
             for type_name, patterns in EMBED_TYPES.items():
                 for pattern in patterns:

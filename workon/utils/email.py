@@ -11,7 +11,6 @@ from django.core.mail.backends.smtp import EmailBackend
 from django.core.mail.message import sanitize_address, DEFAULT_ATTACHMENT_MIME_TYPE
 from django.template import Context, RequestContext
 from django.template.loader import get_template
-from django.utils import six
 from django.utils.html import strip_tags
 from urllib.parse import urlparse
 try:
@@ -112,7 +111,7 @@ class ContentEmail(EmailMultiAlternatives):
         subject = " ".join(subject.splitlines())
         content = kwargs.pop('body', content)
 
-        if isinstance(receivers, six.string_types):
+        if isinstance(receivers, str):
             receivers = [receivers]
 
         if content_type:
@@ -136,7 +135,7 @@ class HtmlTemplateEmail(EmailMultiAlternatives):
         self.is_sent = False
         self.html = html
 
-        if isinstance(receivers, six.string_types):
+        if isinstance(receivers, str):
             receivers = [receivers]
 
         subject = " ".join(subject.splitlines())
