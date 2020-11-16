@@ -1,7 +1,7 @@
 import math
 from functools import reduce
 from django.core.paginator import \
-    Paginator, QuerySetPaginator, Page, InvalidPage, PageNotAnInteger, EmptyPage
+    Paginator, Page, InvalidPage, PageNotAnInteger, EmptyPage
 
 __all__ = (
     'InvalidPage',
@@ -332,8 +332,6 @@ class DiggPage(ExPage):
                             " ".join(map(str, self.main_range)),
                             " ".join(map(str, self.trailing_range))]))
 
-class QuerySetDiggPaginator(DiggPaginator, QuerySetPaginator):
-    pass
 
 if __name__ == "__main__":
     import doctest
